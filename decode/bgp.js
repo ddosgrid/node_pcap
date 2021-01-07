@@ -100,6 +100,10 @@ OpenMessage.prototype.decode = function decodeOpen (buff) {
   }
 }
 
+OpenMessage.prototype.toString = function serializeOpenMsg () {
+  return `Connection request from ${this.bgpID} in AS${this.autonomoussystem}`
+}
+
 function NotificationMessage() { this.decode(buff) }
 NotificationMessage.prototype.decode = function decodeNotification (buff) {
   this.errorCode = buff.readUInt8(0)
@@ -156,7 +160,15 @@ NotificationMessage.prototype.decode = function decodeNotification (buff) {
   this.data = buff.slice(2)
 }
 
+NotificationMessage.prototype.toString = function serializeNotification () {
+  return `${this.errorMessage}: ${this.subMessage}`
+}
+
 function KeepaliveMessage() { }
+
+KeepaliveMessage.prototype.toString = function serializeKeepalive () {
+  return 'Keep Alive'
+}
 
 function UpdateMessage(buff) { this.decode(buff) }
 UpdateMessage.prototype.decode = function decodeUpdate (buff) {
@@ -181,6 +193,10 @@ UpdateMessage.prototype.decode = function decodeUpdate (buff) {
     this.nlri.push(`${pref.addr.join('.')}/${length}`)
     this.nlriBuff = this.nlriBuff.slice(4)
   }
+}
+
+UpdateMessage.prototype.toString = function serializeUpdateMessage () {
+  return `Withdraw ${this.unfeasible.withdrawnroutes.length} routes, announce ${this.nlri.join(', ')}`
 }
 
 module.exports = BGP;
